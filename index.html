@@ -151,10 +151,14 @@ var popup = `
     </div>
   </div>
 `;
-layer.bindPopup(popup,{
-  maxWidth: Math.min(300, window.innerWidth * 0.85),
-minWidth: Math.max(300, window.innerWidth * 0.85)
-});  }
+const isMobile = window.innerWidth < 600;
+const popupWidth = isMobile ? 225 * 0.8 : 225;
+
+layer.bindPopup(popup, {
+  maxWidth: popupWidth,
+  minWidth: popupWidth
+});
+}
 
 }).addTo(map);
 </script>
