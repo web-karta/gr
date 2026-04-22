@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Crkve</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=PT+Serif:wght@400;700&display=swap" rel="stylesheet">
@@ -11,6 +11,7 @@
 <style>
 html, body, #map {
   height: 100%;
+width: 100%;
   margin: 0;
 }
 
@@ -151,10 +152,9 @@ var popup = `
   </div>
 `;
 layer.bindPopup(popup,{
-  minWidth:225,
-  maxWidth:225
-});
-  }
+  maxWidth: Math.min(300, window.innerWidth * 0.85),
+minWidth: Math.max(300, window.innerWidth * 0.85)
+});  }
 
 }).addTo(map);
 </script>
