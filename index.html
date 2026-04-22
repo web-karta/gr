@@ -1,167 +1,152 @@
 <!DOCTYPE html>
-<html lang="hr">
-<head>
-<meta charset="utf-8">
-<title>Crkve</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=PT+Serif:wght@400;700&display=swap" rel="stylesheet">
+<html lang="HR">
+  <head>
+      <meta charset="utf-8">
+      <title>Web-karta Općine Grude</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+      <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=PT+Serif:wght@400;700&display=swap" rel="stylesheet">
 
-<style>
-html, body, #map {
-  height: 100%;
-width: 100%;
-  margin: 0;
-}
+    <style>
+      html, body, #map {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      }
 
-.leaflet-popup-tip {
-  display: none;
-}
-.leaflet-popup-content-wrapper {
-  background: rgb(235,235,235);
-  color: black;
-}
+      .leaflet-popup-tip {
+        display: none;
+      }
 
-.popup-title {
-  font-family: "PT Serif", serif;
-  font-size: 10pt;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 4px;
-}
+      .leaflet-popup-content-wrapper {
+      background: rgb(235,235,235);
+      color: black;
+      }
 
-.popup-grid {
-  display: grid;
-  grid-template-columns: 80px 1fr;
-  column-gap: 6px;
-  row-gap: 2px;
-  font-family: "PT Sans", sans-serif;
-  font-size: 9pt;
-text-align: justify;
-}
+      .popup-title {
+      font-family: "PT Serif", serif;
+      font-size: 10pt;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 4px;
+      }
 
-.popup-grid .lbl {
-  text-align: left;
-}
+      .popup-grid {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      column-gap: 6px;
+      row-gap: 2px;
+      font-family: "PT Sans", sans-serif;
+      font-size: 9pt;
+      text-align: justify;
+      }
 
-.popup-grid .val {
-  text-align: left;
-word-break: break-word;
-}
-.leaflet-popup-content {
-  font-family: "PT Sans", sans-serif;
-max-height: 55vh;
-overflow-y: auto;
-}
+      .popup-grid .lbl {
+      text-align: left;
+      }
 
-.leaflet-popup-content {
-  font-family: "PT Sans", sans-serif;
-  font-size: 9pt;
-  line-height: 1.3;
-}
+      .popup-grid .val {
+      text-align: left;
+      word-break: break-word;
+      }
 
+      .leaflet-popup-content {
+      font-family: "PT Sans", sans-serif;
+      max-height: 55vh;
+      font-size: 9pt;
+      line-height: 1.3;
+      overflow-y: auto;
+      }
 
-/* QGIS stil */
-.crkva-marker {
-  position: relative;
-  width: 10px;
-  height: 10px;
-}
+      .crkva-marker {
+      position: relative;
+      width: 10px;
+      height: 10px;
+      }
 
-.crkva-marker .circle {
-  width: 10px;
-  height: 10px;
-  background: black;
-  border-radius: 50%;
-}
+      .crkva-marker .circle {
+      width: 10px;
+      height: 10px;
+      background: black;
+      border-radius: 50%;
+      }
 
-.crkva-marker .cross {
-  position: absolute;
-  left: -3px;
-  top: -3px;
-  width: 16px;
-  height: 16px;
-  transform: rotate(45deg);
-}
-</style>
-</head>
+      .crkva-marker .cross {
+      position: absolute;
+      left: -3px;
+      top: -3px;
+      width: 16px;
+      height: 16px;
+      transform: rotate(45deg);
+      }
 
-<body>
+    </style>
 
-<div id="map"></div>
+  </head>
+  <body>
+      <div id="map"></div>
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+      <script src="crkve.js"></script>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="crkve.js"></script>
+    <script>
 
-<script>
+      var bounds = [[43, 17],[44, 18]];
+      var map = L.map('map', {
+      maxBounds: bounds,
+      maxBoundsViscosity: 1.0,
+      zoomControl: false
+      }).setView([43.3544, 17.3741], 12);
 
-var bounds = [
-  [43, 17], // jugozapad
-  [44, 18]  // sjeveroistok
-];
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { 
+      maxZoom: 19,
+      minZoom: 10 
+      }).addTo(map);
 
-var map = L.map('map', {
-  maxBounds: bounds,
-  maxBoundsViscosity: 1.0
-}).setView([43.3544, 17.3741], 12);
-L.tileLayer(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-  { maxZoom: 19,
-minZoom: 10 }
-).addTo(map);
-
-var icon = L.divIcon({
-  className: '',
-  html: `
-    <div class="crkva-marker">
+      var icon = L.divIcon({
+      html: `
+      <div class="crkva-marker">
       <div class="circle"></div>
       <div class="cross"></div>
-    </div>
-  `,
-  iconSize: [10,10],
-  iconAnchor: [5,5]
-});
+      </div>
+      `,
+      iconSize: [10,10],
+      iconAnchor: [5,5]
+      });
 
-L.geoJSON(crkve,{
+      L.geoJSON(crkve, {
+      pointToLayer: function(feature, latlng){
+      return L.marker(latlng,{icon:icon});
+      },
+      onEachFeature: function(feature, layer){
 
-  pointToLayer: function(feature, latlng){
-    return L.marker(latlng,{icon:icon});
-  },
+      var p = feature.properties;
 
-  onEachFeature: function(feature, layer){
+      var popup = `
+      <div class="popup-title">${p["Naziv crkve"]}</div>
+      <div class="popup-grid">
+      <div class="lbl">Župa:</div><div class="val">${p["Župa"]}</div>
+      <div class="lbl">Mjesto:</div><div class="val">${p["Mjesto"]}</div>
+      <div class="lbl">Vrsta:</div><div class="val">${p["Vrsta crkve"]}</div>
+      <div class="lbl">Godina:</div><div class="val">${p["Godina izgradnje"]}</div>
+      <div class="lbl">Značaj:</div><div class="val">${p["Značaj"]}</div>
+      <div class="lbl">Web-stranica:</div>
+      <div class="val">${p["Web-stranica"] !== "nema"
+      ? `<a href="${p["Web-stranica"]}" target="_blank">Otvori</a>` : "nema"}
+      </div>
+      </div>
+      `;
 
-    var p = feature.properties;
+      const isMobile = window.innerWidth < 600;
+      const popupWidth = isMobile ? 225 * 0.8 : 225;
 
-var popup = `
-  <div class="popup-title">${p["Naziv crkve"]}</div>
+      layer.bindPopup(popup, {
+      maxWidth: popupWidth,
+      minWidth: popupWidth
+      });
+      }}).addTo(map);
 
-  <div class="popup-grid">
-    <div class="lbl">Župa:</div><div class="val">${p["Župa"]}</div>
-    <div class="lbl">Mjesto:</div><div class="val">${p["Mjesto"]}</div>
-    <div class="lbl">Vrsta:</div><div class="val">${p["Vrsta crkve"]}</div>
-    <div class="lbl">Godina:</div><div class="val">${p["Godina izgradnje"]}</div>
-    <div class="lbl">Značaj:</div><div class="val">${p["Značaj"]}</div>
+    </script>
 
-    <div class="lbl">Web-stranica:</div>
-    <div class="val">
-      ${p["Web-stranica"] !== "nema"
-        ? `<a href="${p["Web-stranica"]}" target="_blank">Otvori</a>`
-        : "nema"}
-    </div>
-  </div>
-`;
-const isMobile = window.innerWidth < 600;
-const popupWidth = isMobile ? 225 * 0.8 : 225;
-
-layer.bindPopup(popup, {
-  maxWidth: popupWidth,
-  minWidth: popupWidth
-});
-}
-
-}).addTo(map);
-</script>
-
-</body>
+  </body>
 </html>
