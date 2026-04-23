@@ -13,6 +13,7 @@
       height: 100%;
       width: 100%;
       margin: 0;
+      overflow: hidden;
       }
 
       .leaflet-popup-tip {
@@ -59,35 +60,27 @@
       overflow-y: auto;
       }
 
-      .crkva-marker {
-      position: relative;
-      width: 10px;
-      height: 10px;
-      }
-
-      .crkva-marker .circle {
-      width: 10px;
-      height: 10px;
-      background: black;
-      border-radius: 50%;
-      }
-
-      .crkva-marker .cross {
-      position: absolute;
-      left: -3px;
-      top: -3px;
-      width: 16px;
-      height: 16px;
-      transform: rotate(45deg);
-      }
-
     </style>
 
   </head>
   <body>
       <div id="map"></div>
+      <div id="viewer" style="
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      z-index: 999;
+      ">
+      <iframe id="frame" style="width:100%;height:100%;border:0;"></iframe>
+    </div>
+
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
       <script src="crkve.js"></script>
+      <script src="groblja.js"></script>
+
 
     <script>
 
@@ -103,47 +96,109 @@
       minZoom: 10 
       }).addTo(map);
 
-      var icon = L.divIcon({
-      html: `
-      <div class="crkva-marker">
-      <div class="circle"></div>
-      <div class="cross"></div>
-      </div>
-      `,
-      iconSize: [10,10],
-      iconAnchor: [5,5]
+      function okvir() {
+	    const isMobile = window.innerWidth < 600;
+      const popupWidth = isMobile ? 225 * 0.8 : 225;
+
+      return {
+      maxWidth: popupWidth,
+      minWidth: popupWidth
+      };
+      }
+
+      let mode = "3D";
+      const url3D = "index.html";
+      const url2D = "https://virtualtours.virtualno360.hr/F1aR2rgBvf/46190512p&27.02h&80.17t";
+      var toggleControl = L.control({ position: 'topright' });
+      toggleControl.onAdd = function () {
+      var div = L.DomUtil.create('div');
+      div.innerHTML = "3D";
+      div.style.width = "44px";
+      div.style.height = "44px";
+      div.style.borderRadius = "50%";
+      div.style.background = "white";
+      div.style.display = "flex";
+      div.style.alignItems = "center";
+      div.style.justifyContent = "center";
+      div.style.cursor = "pointer";
+      div.style.fontWeight = "700";
+      div.style.fontFamily = "PT Sans";
+      div.style.boxShadow = "0 1px 4px rgba(0,0,0,0.3)";
+      div.onclick = function () {
+      const viewer = document.getElementById("viewer");
+      const frame = document.getElementById("frame");
+
+      if (mode === "3D") {
+      mode = "2D";
+      div.innerHTML = "2D";
+      viewer.style.display = "block";
+      frame.src = url2D;
+      } else {
+      mode = "3D";
+      div.innerHTML = "3D";
+      viewer.style.display = "none";
+      frame.src = "";
+      }
+      };
+      return div;
+      };
+      toggleControl.addTo(map);
+
+      var Crkve = L.icon({
+      iconUrl: 'Oznake/Crkve.svg',
+      iconSize: [20,20],
+      iconAnchor: [10,10]
       });
 
       L.geoJSON(crkve, {
       pointToLayer: function(feature, latlng){
-      return L.marker(latlng,{icon:icon});
+      return L.marker(latlng,{icon:Crkve});
       },
       onEachFeature: function(feature, layer){
 
-      var p = feature.properties;
-
-      var popup = `
-      <div class="popup-title">${p["Naziv crkve"]}</div>
+      var okvirCrkve = `
+      <div class="popup-title">${feature.properties["Naziv crkve"]}</div>
       <div class="popup-grid">
-      <div class="lbl">Župa:</div><div class="val">${p["Župa"]}</div>
-      <div class="lbl">Mjesto:</div><div class="val">${p["Mjesto"]}</div>
-      <div class="lbl">Vrsta:</div><div class="val">${p["Vrsta crkve"]}</div>
-      <div class="lbl">Godina:</div><div class="val">${p["Godina izgradnje"]}</div>
-      <div class="lbl">Značaj:</div><div class="val">${p["Značaj"]}</div>
+      <div class="lbl">Župa:</div><div class="val">${feature.properties["Župa"]}</div>
+      <div class="lbl">Mjesto:</div><div class="val">${feature.properties["Mjesto"]}</div>
+      <div class="lbl">Vrsta crkve:</div><div class="val">${feature.properties["Vrsta crkve"]}</div>
+      <div class="lbl">Građena:</div><div class="val">${feature.properties["Godina izgradnje"]}</div>
+      <div class="lbl">Značaj:</div><div class="val">${feature.properties["Značaj"]}</div>
       <div class="lbl">Web-stranica:</div>
-      <div class="val">${p["Web-stranica"] !== "nema"
-      ? `<a href="${p["Web-stranica"]}" target="_blank">Otvori</a>` : "nema"}
+      <div class="val">${feature.properties["Web-stranica"] !== "nema"
+      ? `<a href="${feature.properties["Web-stranica"]}" target="_blank">Otvori</a>` : "nema"}
       </div>
       </div>
       `;
 
-      const isMobile = window.innerWidth < 600;
-      const popupWidth = isMobile ? 225 * 0.8 : 225;
+      layer.bindPopup(okvirCrkve, okvir());
+      }}).addTo(map);
 
-      layer.bindPopup(popup, {
-      maxWidth: popupWidth,
-      minWidth: popupWidth
+      var Groblja = L.icon({
+      iconUrl: 'Oznake/Groblja.svg',
+      iconSize: [20,20],
+      iconAnchor: [10,10]
       });
+
+      L.geoJSON(groblja, {
+      pointToLayer: function(feature, latlng){
+      return L.marker(latlng,{icon:Groblja});
+      },
+      onEachFeature: function(feature, layer){
+
+      var okvirGroblja = `
+      <div class="popup-title">${feature.properties["Naziv groblja"]}</div>
+      <div class="popup-grid">
+      <div class="lbl">Župa:</div><div class="val">${feature.properties["Župa"]}</div>
+      <div class="lbl">Mjesto:</div><div class="val">${feature.properties["Mjesto"]}</div>
+      <div class="lbl">Vrsta groblja:</div><div class="val">${feature.properties["Vrsta groblja"]}</div>
+      <div class="lbl">Mrtvačnica:</div><div class="val">${feature.properties["Mrtvačnica"]}</div>
+      <div class="lbl">Značaj:</div><div class="val">${feature.properties["Značaj"]}</div>
+      </div>
+      </div>
+      `;
+
+      layer.bindPopup(okvirGroblja, okvir());
       }}).addTo(map);
 
     </script>
