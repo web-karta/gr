@@ -60,6 +60,21 @@
       overflow-y: auto;
       }
 
+      .toggle-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: white;
+      cursor: pointer;
+      font-weight: 700;
+      font-family: "PT Sans", sans-serif;
+      font-size: 18px;
+      line-height: 44px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+      user-select: none;
+      }
+
     </style>
 
   </head>
@@ -111,19 +126,9 @@
       const url2D = "https://virtualtours.virtualno360.hr/F1aR2rgBvf/46190512p&27.02h&80.17t";
       var toggleControl = L.control({ position: 'topright' });
       toggleControl.onAdd = function () {
-      var div = L.DomUtil.create('div');
+      var div = L.DomUtil.create('div', 'toggle-btn');
       div.innerHTML = "3D";
-      div.style.width = "44px";
-      div.style.height = "44px";
-      div.style.borderRadius = "50%";
-      div.style.background = "white";
-      div.style.display = "flex";
-      div.style.alignItems = "center";
-      div.style.justifyContent = "center";
-      div.style.cursor = "pointer";
-      div.style.fontWeight = "700";
-      div.style.fontFamily = "PT Sans";
-      div.style.boxShadow = "0 1px 4px rgba(0,0,0,0.3)";
+      div.title = "Prikaži u prostoru";
       div.onclick = function () {
       const viewer = document.getElementById("viewer");
       const frame = document.getElementById("frame");
@@ -131,11 +136,13 @@
       if (mode === "3D") {
       mode = "2D";
       div.innerHTML = "2D";
+      div.title = "Prikaži u ravnini";
       viewer.style.display = "block";
       frame.src = url2D;
       } else {
       mode = "3D";
       div.innerHTML = "3D";
+      div.title = "Prikaži u 2D";
       viewer.style.display = "none";
       frame.src = "";
       }
