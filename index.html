@@ -95,13 +95,13 @@
       <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
       <script src="crkve.js"></script>
       <script src="groblja.js"></script>
-
+      <script src="ooustanove.js"></script>
 
     <script>
 
-      var bounds = [[43, 17],[44, 18]];
+      var obuhvat = [[43, 17],[44, 18]];
       var map = L.map('map', {
-      maxBounds: bounds,
+      maxBounds: obuhvat,
       maxBoundsViscosity: 1.0,
       zoomControl: false
       }).setView([43.3544, 17.3741], 12);
@@ -110,6 +110,28 @@
       maxZoom: 19,
       minZoom: 10 
       }).addTo(map);
+
+      const mjeriloOznake = L.Marker.prototype.setIcon;
+      L.Marker.prototype.setIcon = function(icon) {
+      const size = map.getZoom() <= 14 ? 10 : 20;
+      const newIcon = L.icon({
+      iconUrl: icon.options.iconUrl,
+      iconSize: [size, size],
+      iconAnchor: [size/2, size/2]
+      });
+      return mjeriloOznake.call(this, newIcon);
+      };
+
+      function promijenimjeriloOznake() {
+      map.eachLayer(function(layer) {
+      if (layer instanceof L.Marker) {
+      layer.setIcon(layer.options.icon);
+      }
+      });
+      }
+
+      map.on('zoomend', promijenimjeriloOznake);
+      setTimeout(promijenimjeriloOznake, 0);
 
       function okvir() {
 	    const isMobile = window.innerWidth < 600;
@@ -121,7 +143,7 @@
       };
       }
 
-      let mode = "3D";
+      let prikaz = "3D";
       const url3D = "index.html";
       const url2D = "https://virtualtours.virtualno360.hr/F1aR2rgBvf/46190512p&27.02h&80.17t";
       var toggleControl = L.control({ position: 'topright' });
@@ -133,14 +155,14 @@
       const viewer = document.getElementById("viewer");
       const frame = document.getElementById("frame");
 
-      if (mode === "3D") {
-      mode = "2D";
+      if (prikaz === "3D") {
+      prikaz = "2D";
       div.innerHTML = "2D";
       div.title = "Prikaži u ravnini";
       viewer.style.display = "block";
       frame.src = url2D;
       } else {
-      mode = "3D";
+      prikaz = "3D";
       div.innerHTML = "3D";
       div.title = "Prikaži u 2D";
       viewer.style.display = "none";
@@ -206,6 +228,36 @@
       `;
 
       layer.bindPopup(okvirGroblja, okvir());
+      }}).addTo(map);
+
+      var OOustanove = L.icon({
+      iconUrl: 'Oznake/OOustanove.svg',
+      iconSize: [20,20],
+      iconAnchor: [10,10]
+      });
+
+      L.geoJSON(ooustanove, {
+      pointToLayer: function(feature, latlng){
+      return L.marker(latlng,{icon:OOustanove});
+      },
+      onEachFeature: function(feature, layer){
+
+      var okvirOOustanove = `
+      <div class="popup-title">${feature.properties["Naziv ustanove"]}</div>
+      <div class="popup-grid">
+      <div class="lbl">Adresa:</div><div class="val">${feature.properties["Adresa ustanove"]}</div>
+      <div class="lbl">Vrsta ustanove:</div><div class="val">${feature.properties["Vrsta ustanove"]}</div>
+      <div class="lbl">Nadležnost:</div><div class="val">${feature.properties["Matična ustanova"]}</div>
+      <div class="lbl">Osnovana:</div><div class="val">${feature.properties["Godina osnutka"]}</div>
+      <div class="lbl">Napomena:</div><div class="val">${feature.properties["Napomena"]}</div>
+      <div class="lbl">Web-stranica:</div>
+      <div class="val">${feature.properties["Web-stranica"] !== "nema"
+      ? `<a href="${feature.properties["Web-stranica"]}" target="_blank">Otvori</a>` : "nema"}
+      </div>
+      </div>
+      `;
+
+      layer.bindPopup(okvirOOustanove, okvir());
       }}).addTo(map);
 
     </script>
