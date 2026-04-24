@@ -75,11 +75,7 @@
       user-select: none;
       }
 
-      .leaflet-marker-icon {
-  filter: drop-shadow(0 0 0.5px black)
-          drop-shadow(0 0 0.5px black)
-          drop-shadow(0 0 0.5px black);
-}
+/*.leaflet-marker-icon {filter: drop-shadow(0 0 0.5px black)drop-shadow(0 0 0.5px black)drop-shadow(0 0 0.5px black);}*/
 
     </style>
 
@@ -245,35 +241,7 @@
       layer.bindPopup(okvirGroblja, okvir());
       }}).addTo(map);
 
-      var OOustanove = L.icon({
-      iconUrl: 'Oznake/OOustanove.svg',
-      iconSize: [20,20],
-      iconAnchor: [10,10]
-      });
 
-      L.geoJSON(ooustanove, {
-      pointToLayer: function(feature, latlng){
-      return L.marker(latlng,{icon:OOustanove});
-      },
-      onEachFeature: function(feature, layer){
-
-      var okvirOOustanove = `
-      <div class="popup-title">${feature.properties["Naziv ustanove"]}</div>
-      <div class="popup-grid">
-      <div class="lbl">Adresa:</div><div class="val">${feature.properties["Adresa ustanove"]}</div>
-      <div class="lbl">Vrsta ustanove:</div><div class="val">${feature.properties["Vrsta ustanove"]}</div>
-      <div class="lbl">Nadležnost:</div><div class="val">${feature.properties["Matična ustanova"]}</div>
-      <div class="lbl">Osnovana:</div><div class="val">${feature.properties["Godina osnutka"]}</div>
-      <div class="lbl">Napomena:</div><div class="val">${feature.properties["Napomena"]}</div>
-      <div class="lbl">Web-stranica:</div>
-      <div class="val">${feature.properties["Web-stranica"] !== "nema"
-      ? `<a href="${feature.properties["Web-stranica"]}" target="_blank">Otvori</a>` : "nema"}
-      </div>
-      </div>
-      `;
-
-      layer.bindPopup(okvirOOustanove, okvir());
-      }}).addTo(map);
 
     </script>
 
