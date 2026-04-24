@@ -75,6 +75,12 @@
       user-select: none;
       }
 
+      .leaflet-marker-icon {
+  filter: drop-shadow(0 0 0.5px black)
+          drop-shadow(0 0 0.5px black)
+          drop-shadow(0 0 0.5px black);
+}
+
     </style>
 
   </head>
@@ -146,8 +152,8 @@
       let prikaz = "3D";
       const url3D = "index.html";
       const url2D = "https://virtualtours.virtualno360.hr/F1aR2rgBvf/46190512p&27.02h&80.17t";
-      var toggleControl = L.control({ position: 'topright' });
-      toggleControl.onAdd = function () {
+      var gumbPrikaza = L.control({ position: 'topright' });
+      gumbPrikaza.onAdd = function () {
       var div = L.DomUtil.create('div', 'toggle-btn');
       div.innerHTML = "3D";
       div.title = "Prikaži u prostoru";
@@ -171,7 +177,16 @@
       };
       return div;
       };
-      toggleControl.addTo(map);
+      gumbPrikaza.addTo(map);
+
+      var izbornik = L.control({ position: 'topleft' });
+      izbornik.onAdd = function () {
+      var div = L.DomUtil.create('div', 'toggle-btn');
+      div.innerHTML = "☰";
+      div.title = "Izbornik";
+      return div;
+      };
+      izbornik.addTo(map);
 
       var Crkve = L.icon({
       iconUrl: 'Oznake/Crkve.svg',
